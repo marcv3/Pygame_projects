@@ -6,8 +6,7 @@ from time import sleep
 from Player import Player
 from blocks import Blaster
 import config
-#COLOR_KEY = (255, 0, 255)
-#BS = 40
+
 COLOR_KEY = config.COLOR_KEY
 BS = config.BS
 

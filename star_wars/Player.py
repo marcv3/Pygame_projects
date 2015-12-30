@@ -127,22 +127,23 @@ class Player(pg.sprite.Sprite):
     #
     def check_collisions_plat(self, obstacles):
         self.count = 0
-        platform = pg.sprite.spritecollideany(self, obstacles)
-        if(platform):
-            if(platform.type == "platform"):
+        self.platform = pg.sprite.spritecollideany(self, obstacles)
+        if(self.platform):
+            if(self.platform.type == "platform"):
                 while pg.sprite.spritecollideany(self, obstacles):
                     self.count += 1
-                    self.rect[platform.axis] += platform.direction
-                    if (platform.max_speed) < self.count:
+                    self.rect[self.platform.axis] += self.platform.direction
+                    if (self.platform.max_speed) < self.count:
                         self.dead = True
 
-            if(self.type == "player"):
-                if((platform.type == "danger")or(platform.type == "storm_blast")):
-                    self.dead = True
+            self.check_death(self.platform)
+            #if(self.type == "player"):
+            #    if((platform.type == "danger")or(platform.type == "storm_blast")):
+            #        self.dead = True
 
-            elif(self.type == "storm_trooper"):
-                if((platform.type == "danger")or(platform.type == "player_blast")):
-                    self.dead = True
+            #elif(self.type == "storm_trooper"):
+            #    if((platform.type == "danger")or(platform.type == "player_blast")):
+            #        self.dead = True
 
     # puts player in the correct position
     #
@@ -164,14 +165,8 @@ class Player(pg.sprite.Sprite):
         self.rect[index] += offset[index]
         self.obj = pg.sprite.spritecollideany(self, obstacles)
         if(self.obj):
+            self.check_death(self.obj)
 
-            if(self.type == "player"):
-                if ((self.obj.type == "danger")or(self.obj.type == "storm_blast")):
-                    self.dead = True
-
-            elif(self.type == "storm_trooper"):
-                if ((self.obj.type == "danger")or(self.obj.type == "player_blast")):
-                    self.dead = True
 
         while pg.sprite.spritecollideany(self, obstacles):
             self.obj = pg.sprite.spritecollideany(self, obstacles)
@@ -212,3 +207,11 @@ class Player(pg.sprite.Sprite):
             elif self.lastHit == "left":
                 self.image = self.luke_stand_gun_left
 
+    def check_death(self,thing):
+        if(self.type == "player"):
+            if ((thing.type == "danger")or(thing.type == "storm_blast")):
+                self.dead = True
+
+        elif(self.type == "storm_trooper"):
+            if ((thing.type == "danger")or(thing.type == "player_blast")):
+                self.dead = True

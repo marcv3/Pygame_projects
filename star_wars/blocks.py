@@ -64,7 +64,7 @@ class Blaster(Platform):
 
             self.sprite_coll = pg.sprite.spritecollideany(self, obstacles) # check if a sprite colledes with its own group?
             #print(self.sprite_coll.type)
-            if (self.dist_moved >= self.move_dist)or(pg.sprite.spritecollideany(self, storm_troopers)):
+            if (self.dist_moved >= self.move_dist)or(pg.sprite.spritecollideany(self, storm_troopers)or(self.sprite_coll.type != self.type)):
                 #self.dist_moved = 0
                 self.moving = False
                 #self.speed = 0
