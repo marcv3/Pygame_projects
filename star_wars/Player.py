@@ -8,6 +8,7 @@ import config
 
 COLOR_KEY = config.COLOR_KEY
 BS = config.BS
+
 class Player(pg.sprite.Sprite):
     def __init__(self,location,speed,type="player"):
         pg.sprite.Sprite.__init__(self)
@@ -39,10 +40,10 @@ class Player(pg.sprite.Sprite):
     def Fire_blaster(self,obstacles):
         if(self.fire and not self.melee):
             if(self.lastHit == "right"):
-                self.blast = Blaster(pg.Color("red"), (self.rect[0] + self.rect[2], self.rect[1] + 12, BS, 2),axis=0,speed=20,move_dist=22,direction=1,kind="player_blast")
+                self.blast = Blaster(pg.Color("red"), (self.rect[0] + self.rect[2], self.rect[1] + 12, BS, 2),axis=0,speed=20,move_dist=BS*8,direction=1,kind="player_blast")
 
             if(self.lastHit == "left"):
-                self.blast = Blaster(pg.Color("red"), (self.rect[0] - 40, self.rect[1] + 12, BS, 2),axis=0,speed=15,move_dist=22,direction=-1,kind="player_blast")
+                self.blast = Blaster(pg.Color("red"), (self.rect[0] - 40, self.rect[1] + 12, BS, 2),axis=0,speed=15,move_dist=BS*8,direction=-1,kind="player_blast")
                 #self.blast = Blaster(pg.Color("red"), (self.rect[0] + self.rect[2], self.rect[1] + 12, BS, 2),axis=0,speed=20,move_dist=22,direction=-1)
             obstacles.add(self.blast)
             self.fire = False
@@ -91,9 +92,10 @@ class Player(pg.sprite.Sprite):
                     self.y_vel += self.collide.speed*self.collide.direction
                 else:
                     self.going_down = False
-
-        if self.collide and ((self.collide.type == "danger")or(self.collide.type == "storm_blast")):
-            self.dead = True
+        if (self.collide):
+            self.check_death(self.collide)
+        #if self.collide and ((self.collide.type == "danger")or(self.collide.type == "storm_blast")):
+        #    self.dead = True
 
         return self.collide
 

@@ -48,11 +48,11 @@ class Stormtrooper(Player):
                 self.jump(obstacles)
             if(self.counter == 120):
                 if(self.x_vel > 0):
-                    self.blast = Blaster(pg.Color("red"), (self.rect[0] + self.rect[2] + 10, self.rect[1] + 12, BS, 2),axis=0,speed=20,move_dist=22,direction=1,kind="storm_blast")
+                    self.blast = Blaster(pg.Color("red"), (self.rect[0] + self.rect[2] + 10, self.rect[1] + 12, BS, 2),axis=0,speed=20,move_dist=BS*8,direction=1,kind="storm_blast")
                 elif(self.x_vel < 0):
-                    self.blast = Blaster(pg.Color("red"), (self.rect[0] - 45, self.rect[1] + 12, BS, 2),axis=0,speed=20,move_dist=22,direction=-1,kind="storm_blast")
+                    self.blast = Blaster(pg.Color("red"), (self.rect[0] - 45, self.rect[1] + 12, BS, 2),axis=0,speed=20,move_dist=BS*8,direction=-1,kind="storm_blast")
                 elif(self.x_vel == 0):
-                    self.blast = Blaster(pg.Color("red"), (self.rect[0] + self.rect[2] + 10, self.rect[1] + 12, BS, 2),axis=0,speed=20,move_dist=22,direction=1,kind="storm_blast")
+                    self.blast = Blaster(pg.Color("red"), (self.rect[0] + self.rect[2] + 10, self.rect[1] + 12, BS, 2),axis=0,speed=20,move_dist=BS*8,direction=1,kind="storm_blast")
                 obstacles.add(self.blast)
                 self.counter = 0
 

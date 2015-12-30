@@ -13,7 +13,7 @@ class Block(pg.sprite.Sprite):
         self.type = kind
 
 class Platform(Block):
-    def __init__(self,color,rect,speed=4,axis=0,delay=30,move_dist=50,direction=1,kind="platform"): 
+    def __init__(self,color,rect,speed=4,axis=0,delay=30,move_dist=40*4,direction=1,kind="platform"): 
         Block.__init__(self, color, rect,kind)
         self.speed = speed
         self.max_speed = speed
@@ -32,7 +32,8 @@ class Platform(Block):
         if self.moving:
             self.rect[self.axis] += self.direction*self.speed
             #self.old_data = self.direction*self.speed
-            self.dist_moved += 1
+            #self.dist_moved += 1
+            self.dist_moved += abs(self.direction*self.speed)
 
             if self.dist_moved >= self.move_dist:
                 self.dist_moved = 0
@@ -50,7 +51,7 @@ class Platform(Block):
         self.move_platform()    
 
 class Blaster(Platform):
-    def __init__(self,color,rect,speed=10,axis=0,delay=1,move_dist=10,direction=0,kind="danger"):
+    def __init__(self,color,rect,speed=10,axis=0,delay=1,move_dist=40*5,direction=0,kind="danger"):
         Platform.__init__(self,color,rect,speed,axis,delay,move_dist,direction,kind)
 
     def update(self,storm_troopers,obstacles):
@@ -60,7 +61,7 @@ class Blaster(Platform):
         if self.moving:
             self.rect[self.axis] += self.direction*self.speed
             #self.old_data = self.direction*self.speed
-            self.dist_moved += 1
+            self.dist_moved += abs(self.direction*self.speed)
 
             self.sprite_coll = pg.sprite.spritecollideany(self, obstacles) # check if a sprite colledes with its own group?
             #print(self.sprite_coll.type)
