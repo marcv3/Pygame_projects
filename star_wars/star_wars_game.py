@@ -49,13 +49,13 @@ class Control(object):
                 if col == "(":
                     self.player = Player((self.x*BS, self.y*BS), 5)
                 if col == "I":
-                    self.obstacles.add(Platform(pg.Color("olivedrab"), (self.x*BS, self.y*BS, BS, 10),axis=1,speed=4,move_dist=80,direction=1))
+                    self.obstacles.add(Platform(pg.Color("olivedrab"), (self.x*BS, self.y*BS, BS, BS),axis=1,speed=4,move_dist=80,direction=1))
                 if col == "i":
-                    self.obstacles.add(Platform(pg.Color("olivedrab"), (self.x*BS, self.y*BS, BS, 10),axis=1,speed=4,move_dist=40,direction=-1))
+                    self.obstacles.add(Platform(pg.Color("olivedrab"), (self.x*BS, self.y*BS, BS, BS),axis=1,speed=4,move_dist=40,direction=-1))
                 if col == "_":
-                    self.obstacles.add(Platform(pg.Color("olivedrab"), (self.x*BS, self.y*BS, BS, 10), move_dist=35*4))
+                    self.obstacles.add(Platform(pg.Color("olivedrab"), (self.x*BS, self.y*BS, BS, BS), move_dist=35*4))
                 if col == "S":
-                    self.storm_troopers.add(Stormtrooper((self.x*BS, self.y*BS), 3))
+                    self.storm_troopers.add(Stormtrooper((self.x*BS, self.y*BS), 1))
 
                 self.x += 1
             self.y += 1 

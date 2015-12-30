@@ -8,3 +8,5 @@ BS = 40
 COLOR_KEY = (255, 0, 255)
 CAPTION = "Star Wars"
 LEVEL = "level_9.txt"
+AVATAR_HEIGHT = 47
+AVATAR_WIDTH = 29

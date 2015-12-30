@@ -12,8 +12,8 @@ COLOR_KEY = config.COLOR_KEY
 BS = config.BS
 
 class Stormtrooper(Player):
-    def __init__(self,location,speed):
-        Player.__init__(self,location,speed)
+    def __init__(self,location,speed,type="storm_trooper"):
+        Player.__init__(self,location,speed,type)
         self.storm_standing_right = pg.image.load("images/storm_standing_right.png").convert()
         self.storm_standing_right.set_colorkey(COLOR_KEY)
         #self.storm_standing_left = pg.image.load("storm_standing_left.png").convert()
@@ -25,7 +25,7 @@ class Stormtrooper(Player):
         self.storm_marching_left = pg.transform.flip(self.storm_marching_right,True,False)
         self.storm_marching_left.set_colorkey(COLOR_KEY)
         self.image = self.storm_standing_right
-        self.rect = self.image.get_rect(topleft=location,width=29,height=self.locked_height)
+        self.rect = self.image.get_rect(topleft=location,width=29,height=config.AVATAR_HEIGHT)
         self.speed = speed
         self.pre_update_flag = 1
         self.counter = 0
@@ -49,11 +49,11 @@ class Stormtrooper(Player):
                 self.jump(obstacles)
             if(self.counter == 120):
                 if(self.x_vel > 0):
-                    self.blast = Blaster(pg.Color("red"), (self.rect[0] + self.rect[2] + 10, self.rect[1] + 12, BS, 2),axis=0,speed=20,move_dist=22,direction=1)
+                    self.blast = Blaster(pg.Color("red"), (self.rect[0] + self.rect[2] + 10, self.rect[1] + 12, BS, 2),axis=0,speed=20,move_dist=22,direction=1,kind="storm_blast")
                 elif(self.x_vel < 0):
-                    self.blast = Blaster(pg.Color("red"), (self.rect[0] - 45, self.rect[1] + 12, BS, 2),axis=0,speed=20,move_dist=22,direction=-1)
+                    self.blast = Blaster(pg.Color("red"), (self.rect[0] - 45, self.rect[1] + 12, BS, 2),axis=0,speed=20,move_dist=22,direction=-1,kind="storm_blast")
                 elif(self.x_vel == 0):
-                    self.blast = Blaster(pg.Color("red"), (self.rect[0] + self.rect[2] + 10, self.rect[1] + 12, BS, 2),axis=0,speed=20,move_dist=22,direction=1)
+                    self.blast = Blaster(pg.Color("red"), (self.rect[0] + self.rect[2] + 10, self.rect[1] + 12, BS, 2),axis=0,speed=20,move_dist=22,direction=1,kind="storm_blast")
                 obstacles.add(self.blast)
                 self.counter = 0
 

@@ -9,18 +9,18 @@ import config
 COLOR_KEY = config.COLOR_KEY
 BS = config.BS
 class Player(pg.sprite.Sprite):
-    def __init__(self,location,speed):
+    def __init__(self,location,speed,type="player"):
         pg.sprite.Sprite.__init__(self)
-        self.locked_height = 47
-        LUKE_SPRITES = pg.image.load("images/luke_sprites0.png").convert() 
-        LUKE_SPRITES.set_colorkey(COLOR_KEY)
-        self.luke_stand_ls = LUKE_SPRITES.subsurface((274,27,29,self.locked_height))
-        self.luke_stand_gun_right = LUKE_SPRITES.subsurface((6,276,34,self.locked_height))
+        self.type = type
+        luke_sprites = pg.image.load("images/luke_sprites0.png").convert() 
+        luke_sprites.set_colorkey(COLOR_KEY)
+        self.luke_stand_ls = luke_sprites.subsurface((274,27,29,config.AVATAR_HEIGHT))
+        self.luke_stand_gun_right = luke_sprites.subsurface((6,276,34,config.AVATAR_HEIGHT))
         self.luke_stand_gun_left = pg.transform.flip(self.luke_stand_gun_right,True,False)
-        self.luke_jump_gun_right = LUKE_SPRITES.subsurface((2,348,33,self.locked_height))
+        self.luke_jump_gun_right = luke_sprites.subsurface((2,348,33,config.AVATAR_HEIGHT))
         self.luke_jump_gun_left = pg.transform.flip(self.luke_jump_gun_right,True,False)
         self.image = self.luke_stand_ls
-        self.rect = self.image.get_rect(topleft=location,width=29,height=self.locked_height)
+        self.rect = self.image.get_rect(topleft=location,width=config.AVATAR_WIDTH,height=config.AVATAR_HEIGHT)
         self.speed = speed
         self.jump_power = -10.0
         self.jump_cut_magnitude = -3.0
@@ -29,6 +29,7 @@ class Player(pg.sprite.Sprite):
         self.dead = False
         self.lastHit = "right"
         self.fire = False
+        self.melee = False
 
         self.x_vel = self.y_vel = 0
         self.grav = 0.4
@@ -36,12 +37,12 @@ class Player(pg.sprite.Sprite):
         self.going_down = False
 
     def Fire_blaster(self,obstacles):
-        if(self.fire):
+        if(self.fire and not self.melee):
             if(self.lastHit == "right"):
-                self.blast = Blaster(pg.Color("red"), (self.rect[0] + self.rect[2], self.rect[1] + 12, BS, 2),axis=0,speed=20,move_dist=22,direction=1)
+                self.blast = Blaster(pg.Color("red"), (self.rect[0] + self.rect[2], self.rect[1] + 12, BS, 2),axis=0,speed=20,move_dist=22,direction=1,kind="player_blast")
 
             if(self.lastHit == "left"):
-                self.blast = Blaster(pg.Color("red"), (self.rect[0] - 40, self.rect[1] + 12, BS, 2),axis=0,speed=15,move_dist=22,direction=-1)
+                self.blast = Blaster(pg.Color("red"), (self.rect[0] - 40, self.rect[1] + 12, BS, 2),axis=0,speed=15,move_dist=22,direction=-1,kind="player_blast")
                 #self.blast = Blaster(pg.Color("red"), (self.rect[0] + self.rect[2], self.rect[1] + 12, BS, 2),axis=0,speed=20,move_dist=22,direction=-1)
             obstacles.add(self.blast)
             self.fire = False
@@ -91,7 +92,7 @@ class Player(pg.sprite.Sprite):
                 else:
                     self.going_down = False
 
-        if self.collide and (self.collide.type == "danger"):
+        if self.collide and ((self.collide.type == "danger")or(self.collide.type == "storm_blast")):
             self.dead = True
 
         return self.collide
@@ -135,8 +136,13 @@ class Player(pg.sprite.Sprite):
                     if (platform.max_speed) < self.count:
                         self.dead = True
 
-            if(platform.type == "danger"):
-                self.dead = True
+            if(self.type == "player"):
+                if((platform.type == "danger")or(platform.type == "storm_blast")):
+                    self.dead = True
+
+            elif(self.type == "storm_trooper"):
+                if((platform.type == "danger")or(platform.type == "player_blast")):
+                    self.dead = True
 
     # puts player in the correct position
     #
@@ -158,8 +164,15 @@ class Player(pg.sprite.Sprite):
         self.rect[index] += offset[index]
         self.obj = pg.sprite.spritecollideany(self, obstacles)
         if(self.obj):
-            if (self.obj.type == "danger"):
-                self.dead = True
+
+            if(self.type == "player"):
+                if ((self.obj.type == "danger")or(self.obj.type == "storm_blast")):
+                    self.dead = True
+
+            elif(self.type == "storm_trooper"):
+                if ((self.obj.type == "danger")or(self.obj.type == "player_blast")):
+                    self.dead = True
+
         while pg.sprite.spritecollideany(self, obstacles):
             self.obj = pg.sprite.spritecollideany(self, obstacles)
             self.rect[index] += (1 if offset[index]<0 else -1)
