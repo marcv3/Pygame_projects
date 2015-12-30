@@ -4,14 +4,15 @@ import sys
 import pygame as pg
 from time import sleep
 from blocks import Blaster
+import config
 
-COLOR_KEY = (255, 0, 255)
-BS = 40
+COLOR_KEY = config.COLOR_KEY
+BS = config.BS
 class Player(pg.sprite.Sprite):
     def __init__(self,location,speed):
         pg.sprite.Sprite.__init__(self)
         self.locked_height = 47
-        LUKE_SPRITES = pg.image.load("luke_sprites0.png").convert() 
+        LUKE_SPRITES = pg.image.load("images/luke_sprites0.png").convert() 
         LUKE_SPRITES.set_colorkey(COLOR_KEY)
         self.luke_stand_ls = LUKE_SPRITES.subsurface((274,27,29,self.locked_height))
         self.luke_stand_gun_right = LUKE_SPRITES.subsurface((6,276,34,self.locked_height))

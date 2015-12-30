@@ -13,10 +13,10 @@ import config
 # make blocks 40x40
 # avatar ~ 30x40
 
-CAPTION = "Simple Platformer"
-SCREEN_SIZE = (800,600)# x by y
-FPS = 40.0
-FULL_SCREEN = False
+CAPTION = config.CAPTION
+SCREEN_SIZE = config.SCREEN_SIZE# x by y
+FPS = config.FPS
+FULL_SCREEN = config.FULL_SCREEN
 
 #BS = 40
 BS=config.BS
@@ -31,7 +31,7 @@ class Control(object):
         self.levelsize = (self.level_width*BS,self.level_height*BS)
         self.obstacles = pg.sprite.Group()
         self.storm_troopers = pg.sprite.Group()
-        self.f = open('level_9.txt', 'r')
+        self.f = open(config.LEVEL, 'r')
         self.data = []
 
         for i in range(self.level_height):
@@ -147,6 +147,14 @@ class Control(object):
         caption = "{} - FPS: {:.2f}".format(CAPTION, self.clock.get_fps())
         pg.display.set_caption(caption)
 
+    def check_death(self):
+        if self.death or self.die:
+            sleep(.25)
+            self.death = False
+            self.die = False
+            Control.__init__(self,FPS)
+        
+
     def main_loop(self):
         while not self.done:
             self.event_loop()
@@ -154,11 +162,7 @@ class Control(object):
             self.player_image()
             self.draw()
             pg.display.update()
-            if self.death or self.die:
-                sleep(.25)
-                self.death = False
-                self.die = False
-                Control.__init__(self,FPS)
+            self.check_death()
             self.clock.tick(self.fps)
             self.display_fps()
 

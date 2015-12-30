@@ -14,12 +14,12 @@ BS = config.BS
 class Stormtrooper(Player):
     def __init__(self,location,speed):
         Player.__init__(self,location,speed)
-        self.storm_standing_right = pg.image.load("storm_standing_right.png").convert()
+        self.storm_standing_right = pg.image.load("images/storm_standing_right.png").convert()
         self.storm_standing_right.set_colorkey(COLOR_KEY)
         #self.storm_standing_left = pg.image.load("storm_standing_left.png").convert()
         self.storm_standing_left = pg.transform.flip(self.storm_standing_right,True,False)
         self.storm_standing_left.set_colorkey(COLOR_KEY)
-        self.storm_marching_right = pg.image.load("storm_marching_right.png").convert()
+        self.storm_marching_right = pg.image.load("images/storm_marching_right.png").convert()
         self.storm_marching_right.set_colorkey(COLOR_KEY)
         #self.storm_marching_left = pg.image.load("storm_marching_left.png").convert()
         self.storm_marching_left = pg.transform.flip(self.storm_marching_right,True,False)

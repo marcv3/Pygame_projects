@@ -21,7 +21,7 @@ class Platform(Block):
         self.delay = delay# delay at end of move
         self.move_dist = move_dist# distance to move before changing direction
         self.moving = True
-        self.direction = direction
+        self.direction = direction# 1 - move to the right, -1 - move to the left
         self.dist_moved = 0
         self.timer = 0
         self.type = kind
