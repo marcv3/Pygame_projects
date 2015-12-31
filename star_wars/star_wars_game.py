@@ -31,6 +31,8 @@ class Control(object):
         self.levelsize = (self.level_width*BS,self.level_height*BS)
         self.obstacles = pg.sprite.Group()
         self.storm_troopers = pg.sprite.Group()
+        self.player_blaster = pg.sprite.Group()
+        self.enemy_blaster = pg.sprite.Group()
         self.f = open(config.LEVEL, 'r')
         self.data = []
 
@@ -49,7 +51,7 @@ class Control(object):
                 if col == "(":
                     self.player = Player((self.x*BS, self.y*BS), 5)
                 if col == "I":
-                    self.obstacles.add(Platform(pg.Color("olivedrab"), (self.x*BS, self.y*BS, BS, BS),axis=1,speed=9,move_dist=BS*4,direction=1))
+                    self.obstacles.add(Platform(pg.Color("olivedrab"), (self.x*BS, self.y*BS, BS, BS),axis=1,speed=4,move_dist=BS*4,direction=1))
                 if col == "i":
                     self.obstacles.add(Platform(pg.Color("olivedrab"), (self.x*BS, self.y*BS, BS, BS),axis=1,speed=4,move_dist=BS*4,direction=-1))
                 if col == "_":
@@ -101,14 +103,16 @@ class Control(object):
         if self.keys[pg.K_ESCAPE]:
             self.done = True
         self.player.pre_update(self.obstacles)
-        self.storm_troopers.update(self.obstacles, self.keys, self.player)
+        self.storm_troopers.update(self.obstacles, self.enemy_blaster, self.player_blaster, self.keys, self.player)
 
         self.obstacles.update(self.storm_troopers,self.obstacles)
-        self.death = self.player.update(self.obstacles, self.keys)
+        self.player_blaster.update(self.storm_troopers,self.obstacles)
+        self.enemy_blaster.update(self.storm_troopers,self.obstacles)
+        self.death = self.player.update(self.obstacles, self.player_blaster, self.enemy_blaster, self.keys)
         if(pg.sprite.spritecollideany(self.player, self.storm_troopers)):
             self.death = True
         #self.death = self.trooper.update(self.obstacles, self.keys)
-        self.storm_troopers.update(self.obstacles, self.keys, self.player)
+        self.storm_troopers.update(self.obstacles, self.enemy_blaster, self.player_blaster, self.keys, self.player)
         #if(self.trooper.update(self.obstacles, self.keys)):
         self.update_viewport()
 
@@ -131,6 +135,8 @@ class Control(object):
             #if not self.player.fall:
             self.level.fill(pg.Color("lightblue"))
             self.obstacles.draw(self.level)
+            self.player_blaster.draw(self.level)
+            self.enemy_blaster.draw(self.level)
             #self.level.blit(self.win_text, self.win_rect)
 
             # must draw these
@@ -153,7 +159,6 @@ class Control(object):
             self.death = False
             self.die = False
             Control.__init__(self,FPS)
-        
 
     def main_loop(self):
         while not self.done:

@@ -37,15 +37,15 @@ class Player(pg.sprite.Sprite):
         self.fall = False
         self.going_down = False
 
-    def Fire_blaster(self,obstacles):
+    def Fire_blaster(self,obstacles,player_blaster):
         if(self.fire and not self.melee):
             if(self.lastHit == "right"):
-                self.blast = Blaster(pg.Color("red"), (self.rect[0] + self.rect[2], self.rect[1] + 12, BS, 2),axis=0,speed=20,move_dist=BS*8,direction=1,kind="player_blast")
+                self.blast = Blaster(pg.Color("red"), (self.rect[0] + self.rect[2], self.rect[1] + 12, BS/2, 2),axis=0,speed=20,move_dist=BS*8,direction=1,kind="player_blast")
 
             if(self.lastHit == "left"):
-                self.blast = Blaster(pg.Color("red"), (self.rect[0] - 40, self.rect[1] + 12, BS, 2),axis=0,speed=15,move_dist=BS*8,direction=-1,kind="player_blast")
+                self.blast = Blaster(pg.Color("red"), (self.rect[0] - 40, self.rect[1] + 12, BS/2, 2),axis=0,speed=15,move_dist=BS*8,direction=-1,kind="player_blast")
                 #self.blast = Blaster(pg.Color("red"), (self.rect[0] + self.rect[2], self.rect[1] + 12, BS, 2),axis=0,speed=20,move_dist=22,direction=-1)
-            obstacles.add(self.blast)
+            player_blaster.add(self.blast)
             self.fire = False
     # when the player jumps
     #
@@ -94,19 +94,21 @@ class Player(pg.sprite.Sprite):
                     self.going_down = False
         if (self.collide):
             self.check_death(self.collide)
-        #if self.collide and ((self.collide.type == "danger")or(self.collide.type == "storm_blast")):
-        #    self.dead = True
+        if self.collide and ((self.collide.type == "danger")or(self.collide.type == "storm_blast")):
+            self.dead = True
 
         return self.collide
 
     # updates player
     #
-    def update(self, obstacles, keys):
+    def update(self, obstacles, player_blaster, enemy_blaster, keys):
+        if(pg.sprite.spritecollideany(self,enemy_blaster)):
+            self.dead = True
         self.check_keys(keys)
         self.plat_collision(obstacles)
         self.get_position(obstacles)
         self.physics_update()
-        self.Fire_blaster(obstacles)
+        self.Fire_blaster(obstacles, player_blaster)
         return self.dead
         #self.dead = False
 
@@ -140,7 +142,7 @@ class Player(pg.sprite.Sprite):
 
             self.check_death(self.platform)
             #if(self.type == "player"):
-            #    if((platform.type == "danger")or(platform.type == "storm_blast")):
+            #    if((self.platform.type == "danger")or(platform.type == "storm_blast")):
             #        self.dead = True
 
             #elif(self.type == "storm_trooper"):
@@ -168,7 +170,6 @@ class Player(pg.sprite.Sprite):
         self.obj = pg.sprite.spritecollideany(self, obstacles)
         if(self.obj):
             self.check_death(self.obj)
-
 
         while pg.sprite.spritecollideany(self, obstacles):
             self.obj = pg.sprite.spritecollideany(self, obstacles)
@@ -210,10 +211,12 @@ class Player(pg.sprite.Sprite):
                 self.image = self.luke_stand_gun_left
 
     def check_death(self,thing):
-        if(self.type == "player"):
-            if ((thing.type == "danger")or(thing.type == "storm_blast")):
-                self.dead = True
+        #if(self.type == "player"):
+        #    if ((thing.type == "danger")or(thing.type == "storm_blast")):
+        #        self.dead = True
 
-        elif(self.type == "storm_trooper"):
-            if ((thing.type == "danger")or(thing.type == "player_blast")):
-                self.dead = True
+        #elif(self.type == "storm_trooper"):
+        #    if ((thing.type == "danger")or(thing.type == "player_blast")):
+        #        self.dead = True
+        if ((thing.type == "danger")):
+            self.dead = True
