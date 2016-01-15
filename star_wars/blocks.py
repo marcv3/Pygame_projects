@@ -3,6 +3,7 @@ import math
 import sys
 import pygame as pg
 from time import sleep
+import config
 
 class Block(pg.sprite.Sprite):
     def __init__(self,color,rect,kind = "normal"):
@@ -11,6 +12,26 @@ class Block(pg.sprite.Sprite):
         self.image = pg.Surface(self.rect.size).convert()
         self.image.fill(color)
         self.type = kind
+
+class Lightsaber(Block):
+    def __init__(self,color,rect,kind , image ):
+        Block.__init__(self, color, rect, kind)
+        self.timer = 0
+        #ls_sprites = pg.image.load("images/luke_sprites0.png").convert()
+        #ls_sprites.set_colorkey(config.COLOR_KEY)
+        #self.image = ls_sprites.subsurface((440,288,config.BS,7))
+        self.image = image
+
+    def update(self,storm_troopers,obstacles):
+        self.swing()
+
+    def swing(self):
+        self.timer += 1
+        if(self.timer == 5):
+            self.kill()
+
+    #def draw(self, surface):
+    #    surface.blit(self.image, self.rect)
 
 class Platform(Block):
     def __init__(self,color,rect,speed=4,axis=0,delay=30,move_dist=40*4,direction=1,kind="platform"): 

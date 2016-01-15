@@ -4,6 +4,7 @@ import sys
 import pygame as pg
 from time import sleep
 from blocks import Blaster
+from blocks import Lightsaber
 import config
 
 COLOR_KEY = config.COLOR_KEY
@@ -15,12 +16,31 @@ class Player(pg.sprite.Sprite):
         self.type = type
         luke_sprites = pg.image.load("images/luke_sprites0.png").convert() 
         luke_sprites.set_colorkey(COLOR_KEY)
-        self.luke_stand_ls = luke_sprites.subsurface((274,27,29,config.AVATAR_HEIGHT))
+        self.luke_stand_ls_right = luke_sprites.subsurface((274,27,29,config.AVATAR_HEIGHT))
+        self.luke_stand_ls_left = pg.transform.flip(self.luke_stand_ls_right,True,False)
+
+        self.luke_swing_ls_right = []
+        self.luke_swing_ls_right.append(luke_sprites.subsurface((352,276,54,config.AVATAR_HEIGHT)))
+        self.luke_swing_ls_right.append(luke_sprites.subsurface((410,276,65,config.AVATAR_HEIGHT)))
+        self.luke_swing_ls_right.append(luke_sprites.subsurface((567,276,60,config.AVATAR_HEIGHT)))
+        self.luke_swing_ls_right.append(luke_sprites.subsurface((654,276,54,config.AVATAR_HEIGHT)))
+
+        self.luke_swing_ls_left = []
+        self.luke_swing_ls_left.append(pg.transform.flip(luke_sprites.subsurface((352,276,54,config.AVATAR_HEIGHT)),True,False))
+        self.luke_swing_ls_left.append(pg.transform.flip(luke_sprites.subsurface((410,276,65,config.AVATAR_HEIGHT)),True,False))
+        self.luke_swing_ls_left.append(pg.transform.flip(luke_sprites.subsurface((567,276,60,config.AVATAR_HEIGHT)),True,False))
+        self.luke_swing_ls_left.append(pg.transform.flip(luke_sprites.subsurface((654,276,54,config.AVATAR_HEIGHT)),True,False))
+        #self.luke_swing_ls_left.append(luke_sprites.subsurface((410,276,65,config.AVATAR_HEIGHT)))
+        #self.luke_swing_ls_left.append(luke_sprites.subsurface((567,276,60,config.AVATAR_HEIGHT)))
+        #self.luke_swing_ls_left.append(luke_sprites.subsurface((654,276,54,config.AVATAR_HEIGHT)))
+
         self.luke_stand_gun_right = luke_sprites.subsurface((6,276,34,config.AVATAR_HEIGHT))
         self.luke_stand_gun_left = pg.transform.flip(self.luke_stand_gun_right,True,False)
+
         self.luke_jump_gun_right = luke_sprites.subsurface((2,348,33,config.AVATAR_HEIGHT))
         self.luke_jump_gun_left = pg.transform.flip(self.luke_jump_gun_right,True,False)
-        self.image = self.luke_stand_ls
+
+        self.image = self.luke_stand_ls_right
         self.rect = self.image.get_rect(topleft=location,width=config.AVATAR_WIDTH,height=config.AVATAR_HEIGHT)
         self.speed = speed
         self.jump_power = -10.0
@@ -30,23 +50,46 @@ class Player(pg.sprite.Sprite):
         self.dead = False
         self.lastHit = "right"
         self.fire = False
-        self.melee = False
+        self.melee = True
+        self.animation = False
+        self.ani_cnt = 0
 
         self.x_vel = self.y_vel = 0
         self.grav = 0.4
         self.fall = False
         self.going_down = False
 
+        self.ls_sprites = pg.image.load("images/luke_sprites0.png").convert()
+        self.ls_sprites.set_colorkey(config.COLOR_KEY)
+        self.ls_image = self.ls_sprites.subsurface((440,288,config.BS,7))
+        
+
     def Fire_blaster(self,obstacles,player_blaster):
         if(self.fire and not self.melee):
             if(self.lastHit == "right"):
-                self.blast = Blaster(pg.Color("red"), (self.rect[0] + self.rect[2], self.rect[1] + 12, BS/2, 2),axis=0,speed=20,move_dist=BS*8,direction=1,kind="player_blast")
+                self.blast = Blaster(pg.Color("blue"), (self.rect[0] + self.rect[2], self.rect[1] + 12, BS/2, 2),axis=0,speed=20,move_dist=BS*8,direction=1,kind="player_blast")
 
             if(self.lastHit == "left"):
-                self.blast = Blaster(pg.Color("red"), (self.rect[0] - 40, self.rect[1] + 12, BS/2, 2),axis=0,speed=15,move_dist=BS*8,direction=-1,kind="player_blast")
+                self.blast = Blaster(pg.Color("blue"), (self.rect[0] - 40, self.rect[1] + 12, BS/2, 2),axis=0,speed=15,move_dist=BS*8,direction=-1,kind="player_blast")
                 #self.blast = Blaster(pg.Color("red"), (self.rect[0] + self.rect[2], self.rect[1] + 12, BS, 2),axis=0,speed=20,move_dist=22,direction=-1)
             player_blaster.add(self.blast)
             self.fire = False
+
+        if(self.fire and self.melee):
+            if(self.lastHit == "right"):
+                #self.blast = Blaster(pg.Color("red"), (self.rect[0] + self.rect[2], self.rect[1] + 12, BS/2, 2),axis=0,speed=20,move_dist=BS*1,direction=1,kind="player_blast")
+                self.saber = Lightsaber(pg.Color("green"), (self.rect[0] + self.rect[2], self.rect[1] + 12, BS, 7), "player_blast", self.ls_image)
+
+            if(self.lastHit == "left"):
+                #self.blast = Blaster(pg.Color("red"), (self.rect[0] -30 , self.rect[1] + 12, BS/2, 2),axis=0,speed=15,move_dist=0,direction=-1,kind="player_blast")
+                #self.blast = Blaster(pg.Color("red"), (self.rect[0] - 40, self.rect[1] + 12, BS/2, 2),axis=0,speed=15,move_dist=BS*1,direction=-1,kind="player_blast")
+                self.saber = Lightsaber(pg.Color("green"), (self.rect[0] - self.rect[2] - 11, self.rect[1] + 12, BS, 7), "player_blast",self.ls_image)
+
+            player_blaster.add(self.saber)
+            #self.animation = True
+            self.fire = False
+
+
     # when the player jumps
     #
     def jump(self, obstacles):
@@ -199,16 +242,57 @@ class Player(pg.sprite.Sprite):
         surface.blit(self.image, self.rect)
 
     def change_image(self):
-        if self.fall:
-            if self.lastHit == "right":
-                self.image = self.luke_jump_gun_right
-            elif self.lastHit == "left":
-                self.image = self.luke_jump_gun_left
+
+
+        if self.animation == True and self.lastHit == "right":
+            self.ani_cnt = self.ani_cnt + 1
+            if self.ani_cnt <= 5:
+                self.image = self.luke_swing_ls_right[0]
+
+            elif self.ani_cnt <= 10:
+                self.image = self.luke_swing_ls_right[1]
+
+            elif self.ani_cnt <= 15:
+                self.image = self.luke_swing_ls_right[2]
+
+            elif self.ani_cnt <= 20:
+                self.image = self.luke_swing_ls_right[3]
+
+            elif self.ani_cnt > 20:
+                self.animation = False
+                self.ani_cnt = 0
+
+
+        elif self.animation == True and self.lastHit == "left":
+            self.ani_cnt = self.ani_cnt + 1
+            if self.ani_cnt <= 5:
+                self.image = self.luke_swing_ls_left[0]
+
+            elif self.ani_cnt <= 10:
+                self.image = self.luke_swing_ls_left[1]
+
+            elif self.ani_cnt <= 15:
+                self.image = self.luke_swing_ls_left[2]
+
+            elif self.ani_cnt <= 20:
+                self.image = self.luke_swing_ls_left[3]
+
+            elif self.ani_cnt > 20:
+                self.animation = False
+                self.ani_cnt = 0
+
         else:
-            if self.lastHit == "right":
-                self.image = self.luke_stand_gun_right
-            elif self.lastHit == "left":
-                self.image = self.luke_stand_gun_left
+            if self.fall:
+                if self.lastHit == "right":
+                    self.image = self.luke_jump_gun_right
+                elif self.lastHit == "left":
+                    self.image = self.luke_jump_gun_left
+            else:
+                if self.lastHit == "right":
+                    self.image = self.luke_stand_ls_right
+                elif self.lastHit == "left":
+                    self.image = self.luke_stand_ls_left
+
 
     def check_death(self,thing):
         #if(self.type == "player"):
